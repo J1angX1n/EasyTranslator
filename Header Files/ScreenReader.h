@@ -9,20 +9,26 @@
 //class QScreen;
 //class TessBaseAPI;
 
-class ScreenReader
+class ScreenReader : public QObject
 {
+	Q_OBJECT
+
 public:
-	ScreenReader();
+	ScreenReader(QObject* parent = nullptr);
 	~ScreenReader();
 
-	QString GetCurrentEngContent();
-
+	void GetScreenshot();
 	bool IsAvailable() { return b_Available; }
+
+public slots:
+	void GetCurrentEngContent();
+
+signals:
+	void OCRFinished(QString text);
 
 private:
 	QScreen* m_Screen;
 	QPixmap m_CurrentScreenshot;
-	float f_Interval = 3.0;
 	tesseract::TessBaseAPI* m_Tesseract;
 	bool b_Available = true;
 };
