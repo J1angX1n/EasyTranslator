@@ -1,12 +1,17 @@
 #include "stdafx.h"
 #include "ScreenReader.h"
-#include <qdebug.h>
+#include <QDebug>
+#include <QScreen>
+#include <QImage>
+#include <QAtomicInt>
 
 ScreenReader::ScreenReader(QObject* parent): QObject(parent)
 {
 	m_Screen = QGuiApplication::primaryScreen();
 	m_CurrentScreenshot = QPixmap()/*m_Screen->grabWindow(0)*/;
 	m_Tesseract = new tesseract::TessBaseAPI();
+	m_Processing = 0;
+
 	QString path = QDir::toNativeSeparators(
 		QCoreApplication::applicationDirPath() + "/../../Resources/tessdata"
 	);
@@ -44,9 +49,15 @@ void ScreenReader::GetScreenshot()
 
 void ScreenReader::GetCurrentEngContent()
 {
+	if (!m_Processing.testAndSetOrdered(0, 1))
+	{
+		return;
+	}
+
 	if (!b_Available)
 	{
 		emit OCRFinished("");
+		m_Processing.storeRelease(0);
 		return;
 	}
 
@@ -55,6 +66,7 @@ void ScreenReader::GetCurrentEngContent()
 	{
 		qWarning() << "Image is null";
 		emit OCRFinished("");
+		m_Processing.storeRelease(0);
 		return;
 	}
 
@@ -73,5 +85,7 @@ void ScreenReader::GetCurrentEngContent()
 	m_Tesseract->Clear();
 
 	emit OCRFinished(ret);
+	m_Processing.storeRelease(0);
+
 	return;
 }

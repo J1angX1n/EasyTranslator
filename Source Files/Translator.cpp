@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "Translator.h"
-#include <qtextedit.h>
-#include <qpushbutton.h>
-#include <qboxlayout.h>
-#include <qnetworkaccessmanager.h>
-#include <qtimer.h>
+#include <QTextEdit>
+#include <QPushButton>
+#include <QBoxLayout>
+#include <QNetworkAccessManager>
+#include <QTimer>
 #include "ScreenReader.h"
-#include <qthread.h>
-
-QString DS_APIKey = "sk-d98de50e686a4b909e3e376916d858e2";
+#include <QThread>
+#include "APIKeySettingsDialog.h"
+#include "AppSettings.h"
 
 Translator::Translator(QWidget *parent)
     : QMainWindow(parent)
@@ -18,9 +18,10 @@ Translator::Translator(QWidget *parent)
     m_NetworkAccessManager = new QNetworkAccessManager(this);
     m_Timer = new QTimer(this);
     m_ScreenReader = new ScreenReader();
+    m_LastContent = "";
 
     InitUI();
-    //SendRequest("less is more \n i love you");
+    InitMenuBar();
 
     m_ScreenReader->moveToThread(&m_ScreenReaderThread);
     connect(m_ScreenReader, &ScreenReader::OCRFinished, this, &Translator::Translate);
@@ -49,29 +50,26 @@ void Translator::OnTranslateFinished(QNetworkReply* reply)
 
 void Translator::Translate(QString text)
 {
-    SendRequest(text);
+    if (m_LastContent != text)
+    {
+        m_LastContent = text;
+        SendRequest(text);
+    }
 }
 
 void Translator::SendRequest(QString Content, AIModel Model)
 {
-    QString SelectedModel = "deepseek-chat";
-    switch (Model)
+    QString selectedModel = GetNameByModel(Model);
+    QString APIKey = AppSettings::GetAPIKey();
+    if (APIKey.isEmpty())
     {
-    case AIModel::DEEPSEEK_CHAT:
-        SelectedModel = "deepseek-chat";
-        break;
-    default:
-        break;
+        m_TextOutput->setText("请先在 Settings > API Key Settings 中设置 API Key");
+        return;
     }
 
     QJsonObject SysInfo{
         {"role", "system"},
-        {"content", "You are a translator. Translate user input to Chinese.\
-              For each input, output in this format:\
-              原文：{original text}\
-              译文：{translated text}\
-              If there are multiple inputs, separate each block with a blank line.\
-              Output only the formatted text, no explanations."}
+        {"content", "You are an English-to-Chinese dictionary. From the input text, extract all recognizable English words and ignore garbled characters. Deduplicate the words. Skip common function words: the, a, an, is, are, was, were, be, been, being, have, has, had, do, does, did, will, would, can, could, may, might, shall, should, I, you, he, she, it, we, they, me, him, her, us, them, my, your, his, its, our, their, this, that, these, those, in, on, at, to, for, of, with, by, from, up, about, into, through, during, before, after, above, below, between, and, but, or, nor, not, so, yet, if, then, than, too, very, just, all, each, every, only, some, any, many, much, more, most, other, also, as, here, there, now, when, where, how, what, which, who, whom, whose, no, yes, please. Translate each remaining word to Chinese. Output one word per line sorted alphabetically. Format: apple: 苹果. Output only translations, no explanations."}
     };
 
     QJsonObject UserInfo{
@@ -82,15 +80,15 @@ void Translator::SendRequest(QString Content, AIModel Model)
     QJsonArray Message{ SysInfo, UserInfo };
 
     QJsonObject RequestedJson{
-        {"model", SelectedModel},
+        {"model", selectedModel},
         {"messages", Message},
-        {"temperature", 0.3},
+        {"temperature", 0},
     };
 
     m_Json = RequestedJson;
     m_NetRequest.setUrl(QUrl("https://api.deepseek.com/v1/chat/completions"));
     m_NetRequest.setRawHeader("Content-Type", "application/json");
-    m_NetRequest.setRawHeader("Authorization", "Bearer " + DS_APIKey.toUtf8());
+    m_NetRequest.setRawHeader("Authorization", "Bearer " + APIKey.toUtf8());
 
     m_NetworkAccessManager->post(m_NetRequest, QJsonDocument(m_Json).toJson());
 }
@@ -117,6 +115,18 @@ void Translator::InitUI()
     connect(m_NetworkAccessManager, &QNetworkAccessManager::finished, this, &Translator::OnTranslateFinished);
 }
 
+void Translator::InitMenuBar()
+{
+    QMenu* file = menuBar()->addMenu("File");
+    QMenu* settings = menuBar()->addMenu("Settings");
+
+    QAction* exit = file->addAction("exit");
+    connect(exit, &QAction::triggered, this, &QMainWindow::close);
+
+    QAction* apiKey = settings->addAction("API Key Settings");
+    connect(apiKey, &QAction::triggered, this, &Translator::OnAPIKeySettingsClicked);
+}
+
 void Translator::TimedTranslate()
 {
     connect(m_Timer, &QTimer::timeout, this, &Translator::ScreenReadTranslate);
@@ -127,4 +137,10 @@ void Translator::ScreenReadTranslate()
 {
     m_ScreenReader->GetScreenshot();
     QMetaObject::invokeMethod(m_ScreenReader, "GetCurrentEngContent", Qt::QueuedConnection);
+}
+
+void Translator::OnAPIKeySettingsClicked()
+{
+    APIKeySettingsDialog* dialog = new APIKeySettingsDialog(this);
+    dialog->show();
 }

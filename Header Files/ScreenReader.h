@@ -1,13 +1,11 @@
 #pragma once
 #include <tesseract/baseapi.h>
 #include <leptonica/allheaders.h>
-#include <qpixmap.h>
-#include <qstring.h>
-#include <qimage.h>
-#include <qscreen.h>
+#include <QPixmap>
+#include <QString>
 
-//class QScreen;
-//class TessBaseAPI;
+class QScreen;
+class QAtomicInt;
 
 class ScreenReader : public QObject
 {
@@ -31,5 +29,6 @@ private:
 	QPixmap m_CurrentScreenshot;
 	tesseract::TessBaseAPI* m_Tesseract;
 	bool b_Available = true;
+	QAtomicInt m_Processing;
 };
 

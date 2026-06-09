@@ -2,7 +2,8 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_Translator.h"
-#include <qnetworkreply.h>
+#include <QNetworkReply>
+#include "AIModel.h"
 
 class QTextEdit;
 class QPushButton;
@@ -12,12 +13,6 @@ class QNetworkAccessManager;
 class QTimer;
 class ScreenReader;
 class QThread;
-
-enum class AIModel
-{
-    DEEPSEEK_CHAT,
-};
-
 
 class Translator : public QMainWindow
 {
@@ -33,8 +28,15 @@ private slots:
 private:
     void SendRequest(QString Content, AIModel Model = AIModel::DEEPSEEK_CHAT);
     void InitUI();
+    void InitMenuBar();
+
     void TimedTranslate();
     void ScreenReadTranslate();
+
+private slots:
+    // MenuBar
+    void OnAPIKeySettingsClicked();
+
 
 private:
     Ui::TranslatorClass ui;
@@ -52,11 +54,12 @@ private:
     QJsonObject m_Json;
 
     // Timer
-    float f_Interval = 5.0; //second
+    float f_Interval = 10.0; //second
     QTimer* m_Timer;
 
     // ScreenReader
     ScreenReader* m_ScreenReader;
+    QString m_LastContent;
 
     // Thread
     QThread m_ScreenReaderThread;

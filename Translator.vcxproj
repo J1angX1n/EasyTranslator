@@ -110,10 +110,15 @@
     <QtRcc Include="Translator.qrc" />
     <QtUic Include="Translator.ui" />
     <QtMoc Include="Header Files\Translator.h" />
+    <ClCompile Include="Source Files\AppSettings.cpp" />
+    <ClCompile Include="Source Files\APIKeySettingsDialog.cpp" />
     <ClCompile Include="Source Files\ScreenReader.cpp" />
     <ClCompile Include="Source Files\Translator.cpp" />
     <ClCompile Include="Source Files\main.cpp" />
     <QtMoc Include="Header Files\ScreenReader.h" />
+    <QtMoc Include="Header Files\APIKeySettingsDialog.h" />
+    <ClInclude Include="Header Files\AppSettings.h" />
+    <ClInclude Include="Header Files\AIModel.h" />
     <ClInclude Include="Header Files\stdafx.h" />
     <ClCompile Include="Source Files\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">Create</PrecompiledHeader>
