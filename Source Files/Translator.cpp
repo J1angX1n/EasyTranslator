@@ -69,7 +69,11 @@ void Translator::SendRequest(QString Content, AIModel Model)
 
     QJsonObject SysInfo{
         {"role", "system"},
-        {"content", "You are an English-to-Chinese dictionary. From the input text, extract all recognizable English words and ignore garbled characters. Deduplicate the words. Skip common function words: the, a, an, is, are, was, were, be, been, being, have, has, had, do, does, did, will, would, can, could, may, might, shall, should, I, you, he, she, it, we, they, me, him, her, us, them, my, your, his, its, our, their, this, that, these, those, in, on, at, to, for, of, with, by, from, up, about, into, through, during, before, after, above, below, between, and, but, or, nor, not, so, yet, if, then, than, too, very, just, all, each, every, only, some, any, many, much, more, most, other, also, as, here, there, now, when, where, how, what, which, who, whom, whose, no, yes, please. Translate each remaining word to Chinese. Output one word per line sorted alphabetically. Format: apple: 苹果. Output only translations, no explanations."}
+        {"content", "You are an English-to-Chinese dictionary. From the input text, extract all \
+        recognizable English words and common phrases (e.g. \"top up\", \"give up\", \"credit card\"). \
+        Skip common function words (a, the, is, in, of, etc.) when they appear alone. Translate each entry to \
+        Chinese. Output one entry per line, sorted alphabetically. Format: apple: 苹果, top up: 充值. Only \
+        translations, no explanations."}
     };
 
     QJsonObject UserInfo{

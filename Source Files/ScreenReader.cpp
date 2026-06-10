@@ -2,13 +2,12 @@
 #include "ScreenReader.h"
 #include <QDebug>
 #include <QScreen>
-#include <QImage>
 #include <QAtomicInt>
 
 ScreenReader::ScreenReader(QObject* parent): QObject(parent)
 {
 	m_Screen = QGuiApplication::primaryScreen();
-	m_CurrentScreenshot = QPixmap()/*m_Screen->grabWindow(0)*/;
+	m_CurrentScreenshot = QImage()/*m_Screen->grabWindow(0)*/;
 	m_Tesseract = new tesseract::TessBaseAPI();
 	m_Processing = 0;
 
@@ -38,7 +37,7 @@ void ScreenReader::GetScreenshot()
 		return;
 	}
 
-	m_CurrentScreenshot = m_Screen->grabWindow(0);
+	m_CurrentScreenshot = m_Screen->grabWindow(0).toImage();
 	if (m_CurrentScreenshot.isNull())
 	{
 		qWarning() << "Screenshot is null";
@@ -61,7 +60,7 @@ void ScreenReader::GetCurrentEngContent()
 		return;
 	}
 
-	QImage Image = m_CurrentScreenshot.toImage();
+	QImage Image = m_CurrentScreenshot;
 	if (Image.isNull())
 	{
 		qWarning() << "Image is null";

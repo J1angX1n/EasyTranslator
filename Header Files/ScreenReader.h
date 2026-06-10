@@ -3,6 +3,7 @@
 #include <leptonica/allheaders.h>
 #include <QPixmap>
 #include <QString>
+#include <QImage>
 
 class QScreen;
 class QAtomicInt;
@@ -26,7 +27,7 @@ signals:
 
 private:
 	QScreen* m_Screen;
-	QPixmap m_CurrentScreenshot;
+	QImage m_CurrentScreenshot;
 	tesseract::TessBaseAPI* m_Tesseract;
 	bool b_Available = true;
 	QAtomicInt m_Processing;
