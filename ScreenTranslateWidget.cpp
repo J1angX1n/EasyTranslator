@@ -43,23 +43,20 @@ void ScreenTranslateWidget::InitWidget()
 
 void ScreenTranslateWidget::InitThread()
 {
-    m_NetworkAccessManager = new NetworkManager(this);
+    m_NetworkManager = new NetworkManager(this);
     m_Timer = new QTimer(this);
     m_ScreenReader = new ScreenReader();
     m_LastContent = "";
 
-    if (b_Enable)
-    {
-        m_ScreenReader->moveToThread(&m_ScreenReaderThread);
-        connect(m_ScreenReader, &ScreenReader::OCRFinished, this, &ScreenTranslateWidget::SendTranslateRequest);
-        m_ScreenReaderThread.start();
+    m_ScreenReader->moveToThread(&m_ScreenReaderThread);
+    connect(m_ScreenReader, &ScreenReader::OCRFinished, this, &ScreenTranslateWidget::SendTranslateRequest);
+    m_ScreenReaderThread.start();
         
-        TimedReadScreen();
-        connect(m_Timer, &QTimer::timeout, this, &ScreenTranslateWidget::TimedReadScreen);
-        m_Timer->start(f_Interval * 1000);
-    }
+    TimedReadScreen();
+    connect(m_Timer, &QTimer::timeout, this, &ScreenTranslateWidget::TimedReadScreen);
+    m_Timer->start(f_Interval * 1000);
 
-    connect(m_NetworkAccessManager, &NetworkManager::OnReceivedReply, this, &ScreenTranslateWidget::OnTranslateFinished);
+    connect(m_NetworkManager, &NetworkManager::OnReceivedReply, this, &ScreenTranslateWidget::OnTranslateFinished);
 }
 
 void ScreenTranslateWidget::OnTranslateFinished(QNetworkReply* reply)
@@ -78,12 +75,18 @@ void ScreenTranslateWidget::SendTranslateRequest(QString text)
     if (m_LastContent != text)
     {
         m_LastContent = text;
-        m_NetworkAccessManager->SendRequest(text);
+        if (!m_NetworkManager->SendRequest(text))
+        {
+            m_TextOutput->setText("Error, please check settings");
+        }
     }
 }
 
 void ScreenTranslateWidget::TimedReadScreen()
 {
-    m_ScreenReader->GetScreenshot();
-    QMetaObject::invokeMethod(m_ScreenReader, "GetCurrentEngContent", Qt::QueuedConnection);
+    if (b_Enabled)
+    {
+        m_ScreenReader->GetScreenshot();
+        QMetaObject::invokeMethod(m_ScreenReader, "GetCurrentEngContent", Qt::QueuedConnection);
+    }
 }

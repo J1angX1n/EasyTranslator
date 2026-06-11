@@ -4,6 +4,8 @@
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QComboBox>
+#include "Translator.h"
+#include "TranslateMode.h"
 
 TranslateSettingsDialog::TranslateSettingsDialog(QWidget* parent): QDialog(parent)
 {
@@ -43,6 +45,8 @@ void TranslateSettingsDialog::InitUI()
 
 void TranslateSettingsDialog::accept()
 {
+    Translator* translator = qobject_cast<Translator*>(this->parentWidget());
+    translator->SetTranslateMode(TranslateMode::GetModeByName(m_TranslateModeCombox->currentText()));
 
     QDialog::accept();
 }

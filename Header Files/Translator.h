@@ -4,6 +4,7 @@
 #include "ui_Translator.h"
 #include <QNetworkReply>
 #include "AIModel.h"
+#include "TranslateMode.h"
 
 class QTextEdit;
 class QPushButton;
@@ -14,6 +15,7 @@ class QTimer;
 class ScreenReader;
 class QStackedWidget;
 class ScreenTranslateWidget;
+class CommonTranslateWidget;
 
 class Translator : public QMainWindow
 {
@@ -25,10 +27,13 @@ public:
 private:
     void SendRequest(QString content, AIModel::Type model = AIModel::Type::DEEPSEEK_CHAT);
     void InitScreenModeUI();
-    //void SetScreenMode();
     void InitCommonModeUI();
+    void SetScreenMode();
     void SetCommonMode();
     void InitMenuBar();
+
+public:
+    void SetTranslateMode(TranslateMode::Type mode);
 
 private slots:
     // MenuBar
@@ -36,6 +41,7 @@ private slots:
     void OnTranslateSettingsClicked();
 
 private:
+    static constexpr int COMMON_INDEX = 0;
     static constexpr int SCREEN_INDEX = 1;
 
 private:
@@ -44,7 +50,10 @@ private:
     // UI
     QStackedWidget* m_StackedWidget;
     QVBoxLayout* m_CentralLayout;
-    QWidget* m_CommonPage;
+    CommonTranslateWidget* m_CommonPage;
     ScreenTranslateWidget* m_ScreenPage;
+
+    // Mode
+    TranslateMode::Type e_TranslateMode;
 };
 

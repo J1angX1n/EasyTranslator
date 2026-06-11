@@ -20,11 +20,16 @@ public:
 	ScreenTranslateWidget(QWidget* parent = nullptr);
 	~ScreenTranslateWidget();
 
+public:
+    void SetEnabled(bool enabled) { b_Enabled = enabled; }
+    bool GetEnabled() { return b_Enabled; }
+
+private:
     void InitWidget();
     void InitThread();
     void TimedReadScreen();
 
-public slots:
+private slots:
     void SendTranslateRequest(QString text);
     void OnTranslateFinished(QNetworkReply* reply);
 
@@ -50,9 +55,9 @@ private:
     float f_Interval = 10.0; //second
     QTimer* m_Timer;
 
-    NetworkManager* m_NetworkAccessManager;
+    NetworkManager* m_NetworkManager;
 
     // Control
-    bool b_Enable = true;
+    bool b_Enabled = true;
 };
 
