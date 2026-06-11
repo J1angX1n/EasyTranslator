@@ -2,37 +2,35 @@
 #include "AppSettings.h"
 #include <QSettings>
 
-QSettings* AppSettings::m_Settings = nullptr;
+std::unique_ptr<QSettings> AppSettings::m_Settings = nullptr;
 
 AppSettings::AppSettings()
 {
-	
 }
 
 AppSettings::~AppSettings()
 {
-	delete m_Settings;
 }
 
 QSettings* AppSettings::GetSettings()
 {
 	if (m_Settings)
 	{
-		return m_Settings;
+		return m_Settings.get();
 	}
 
-	m_Settings = new QSettings("JXAPP", "EasyTranslator");
-	return m_Settings;
+	m_Settings = std::unique_ptr<QSettings>(new QSettings("JXAPP", "EasyTranslator"));
+	return m_Settings.get();
 }
 
-void AppSettings::SetModel(AIModel model)
+void AppSettings::SetModel(AIModel::Type model)
 {
-	GetSettings()->setValue(SettingsKeys::AIModel, GetNameByModel(model));
+	GetSettings()->setValue(SettingsKeys::AIModel, AIModel::GetNameByModel(model));
 }
 
-AIModel AppSettings::GetModel()
+AIModel::Type AppSettings::GetModel()
 {
-	return GetModelByName(GetSettings()->value(SettingsKeys::AIModel).toString());
+	return AIModel::GetModelByName(GetSettings()->value(SettingsKeys::AIModel).toString());
 }
 
 void AppSettings::SetAPIKey(QString key)

@@ -12,7 +12,8 @@ class QHBoxLayout;
 class QNetworkAccessManager;
 class QTimer;
 class ScreenReader;
-class QThread;
+class QStackedWidget;
+class ScreenTranslateWidget;
 
 class Translator : public QMainWindow
 {
@@ -21,47 +22,29 @@ public:
     Translator(QWidget *parent = nullptr);
     ~Translator();
 
-private slots:
-    void OnTranslateFinished(QNetworkReply* reply);
-    void Translate(QString text);
-
 private:
-    void SendRequest(QString Content, AIModel Model = AIModel::DEEPSEEK_CHAT);
-    void InitUI();
+    void SendRequest(QString content, AIModel::Type model = AIModel::Type::DEEPSEEK_CHAT);
+    void InitScreenModeUI();
+    //void SetScreenMode();
+    void InitCommonModeUI();
+    void SetCommonMode();
     void InitMenuBar();
-
-    void TimedTranslate();
-    void ScreenReadTranslate();
 
 private slots:
     // MenuBar
     void OnAPIKeySettingsClicked();
+    void OnTranslateSettingsClicked();
 
+private:
+    static constexpr int SCREEN_INDEX = 1;
 
 private:
     Ui::TranslatorClass ui;
 
     // UI
-    QTextEdit* m_TextOutput;
-    QPushButton* m_PauseButton;
-    QPushButton* m_CancelButton;
-    QVBoxLayout* m_VerticalLayout;
-    QHBoxLayout* m_HorizontalLayout;
-
-    // Network
-    QNetworkAccessManager* m_NetworkAccessManager;
-    QNetworkRequest m_NetRequest;
-    QJsonObject m_Json;
-
-    // Timer
-    float f_Interval = 10.0; //second
-    QTimer* m_Timer;
-
-    // ScreenReader
-    ScreenReader* m_ScreenReader;
-    QString m_LastContent;
-
-    // Thread
-    QThread m_ScreenReaderThread;
+    QStackedWidget* m_StackedWidget;
+    QVBoxLayout* m_CentralLayout;
+    QWidget* m_CommonPage;
+    ScreenTranslateWidget* m_ScreenPage;
 };
 

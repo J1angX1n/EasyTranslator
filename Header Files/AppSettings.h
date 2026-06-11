@@ -1,6 +1,7 @@
 #pragma once
 #include "AIModel.h"
 #include <QString>
+#include <memory>
 
 class QSettings;
 
@@ -18,13 +19,13 @@ public:
 	static QSettings* GetSettings();
 
 public:
-	static void SetModel(AIModel model);
-	static AIModel GetModel();
+	static void SetModel(AIModel::Type model);
+	static AIModel::Type GetModel();
 
 	static void SetAPIKey(QString key);
 	static QString GetAPIKey();
 
 private:
-	static QSettings* m_Settings;
+	static std::unique_ptr<QSettings> m_Settings;
 };
 

@@ -7,116 +7,47 @@
 #include <QTimer>
 #include "ScreenReader.h"
 #include <QThread>
+#include <QStackedWidget>
 #include "APIKeySettingsDialog.h"
 #include "AppSettings.h"
+#include "TranslateSettingsDialog.h"
+#include "ScreenTranslateWidget.h"
 
 Translator::Translator(QWidget *parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
 
-    m_NetworkAccessManager = new QNetworkAccessManager(this);
-    m_Timer = new QTimer(this);
-    m_ScreenReader = new ScreenReader();
-    m_LastContent = "";
+    m_StackedWidget = new QStackedWidget();
+    m_CentralLayout = new QVBoxLayout();
+    m_CentralLayout->addWidget(m_StackedWidget);
+    ui.centralWidget->setLayout(m_CentralLayout);
 
-    InitUI();
     InitMenuBar();
-
-    m_ScreenReader->moveToThread(&m_ScreenReaderThread);
-    connect(m_ScreenReader, &ScreenReader::OCRFinished, this, &Translator::Translate);
-    m_ScreenReaderThread.start();
-
-    TimedTranslate();
+    InitScreenModeUI();
+    //SetScreenMode();
 }
 
 Translator::~Translator()
 {
-    m_ScreenReaderThread.quit();
-    m_ScreenReaderThread.wait();
-    delete m_ScreenReader;
 }
 
-void Translator::OnTranslateFinished(QNetworkReply* reply)
+
+void Translator::InitScreenModeUI()
 {
-    QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
-    QJsonArray choices = (doc.object()["choices"]).toArray();
-
-    QJsonObject message = ((choices[0].toObject())["message"]).toObject();
-    QString content = message["content"].toString();
-
-    m_TextOutput->setText(content);
+    m_ScreenPage = new ScreenTranslateWidget(this);
+    connect(m_ScreenPage, &ScreenTranslateWidget::OnCancelButtonClicked, this, &QMainWindow::close);
+    
+    m_StackedWidget->insertWidget(SCREEN_INDEX, m_ScreenPage);
+    m_StackedWidget->setCurrentIndex(SCREEN_INDEX);
 }
 
-void Translator::Translate(QString text)
+void Translator::InitCommonModeUI()
 {
-    if (m_LastContent != text)
-    {
-        m_LastContent = text;
-        SendRequest(text);
-    }
 }
 
-void Translator::SendRequest(QString Content, AIModel Model)
+void Translator::SetCommonMode()
 {
-    QString selectedModel = GetNameByModel(Model);
-    QString APIKey = AppSettings::GetAPIKey();
-    if (APIKey.isEmpty())
-    {
-        m_TextOutput->setText("请先在 Settings > API Key Settings 中设置 API Key");
-        return;
-    }
-
-    QJsonObject SysInfo{
-        {"role", "system"},
-        {"content", "You are an English-to-Chinese dictionary. From the input text, extract all \
-        recognizable English words and common phrases (e.g. \"top up\", \"give up\", \"credit card\"). \
-        Skip common function words (a, the, is, in, of, etc.) when they appear alone. Translate each entry to \
-        Chinese. Output one entry per line, sorted alphabetically. Format: apple: 苹果, top up: 充值. Only \
-        translations, no explanations."}
-    };
-
-    QJsonObject UserInfo{
-        {"role", "user"},
-        {"content", Content},
-    };
-
-    QJsonArray Message{ SysInfo, UserInfo };
-
-    QJsonObject RequestedJson{
-        {"model", selectedModel},
-        {"messages", Message},
-        {"temperature", 0},
-    };
-
-    m_Json = RequestedJson;
-    m_NetRequest.setUrl(QUrl("https://api.deepseek.com/v1/chat/completions"));
-    m_NetRequest.setRawHeader("Content-Type", "application/json");
-    m_NetRequest.setRawHeader("Authorization", "Bearer " + APIKey.toUtf8());
-
-    m_NetworkAccessManager->post(m_NetRequest, QJsonDocument(m_Json).toJson());
-}
-
-void Translator::InitUI()
-{
-    m_TextOutput = new QTextEdit();
-    m_PauseButton = new QPushButton();
-    m_CancelButton = new QPushButton();
-    m_VerticalLayout = new QVBoxLayout();
-    m_HorizontalLayout = new QHBoxLayout();
-
-    m_TextOutput->setReadOnly(true);
-    m_PauseButton->setText("Pause");
-    m_CancelButton->setText("Cancel");
-    m_VerticalLayout->addWidget(m_TextOutput);
-
-    m_VerticalLayout->addLayout(m_HorizontalLayout);
-    m_HorizontalLayout->addWidget(m_PauseButton);
-    m_HorizontalLayout->addWidget(m_CancelButton);
-    ui.centralWidget->setLayout(m_VerticalLayout);
-
-    connect(m_CancelButton, &QPushButton::clicked, this, &QMainWindow::close);
-    connect(m_NetworkAccessManager, &QNetworkAccessManager::finished, this, &Translator::OnTranslateFinished);
 }
 
 void Translator::InitMenuBar()
@@ -129,22 +60,19 @@ void Translator::InitMenuBar()
 
     QAction* apiKey = settings->addAction("API Key Settings");
     connect(apiKey, &QAction::triggered, this, &Translator::OnAPIKeySettingsClicked);
-}
 
-void Translator::TimedTranslate()
-{
-    connect(m_Timer, &QTimer::timeout, this, &Translator::ScreenReadTranslate);
-    m_Timer->start(f_Interval * 1000);
-}
-
-void Translator::ScreenReadTranslate()
-{
-    m_ScreenReader->GetScreenshot();
-    QMetaObject::invokeMethod(m_ScreenReader, "GetCurrentEngContent", Qt::QueuedConnection);
+    QAction* translateSettings = settings->addAction("Translate Settings");
+    connect(translateSettings, &QAction::triggered, this, &Translator::OnTranslateSettingsClicked);
 }
 
 void Translator::OnAPIKeySettingsClicked()
 {
     APIKeySettingsDialog* dialog = new APIKeySettingsDialog(this);
+    dialog->show();
+}
+
+void Translator::OnTranslateSettingsClicked()
+{
+    TranslateSettingsDialog* dialog = new TranslateSettingsDialog(this);
     dialog->show();
 }

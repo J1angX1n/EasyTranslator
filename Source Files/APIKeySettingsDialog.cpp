@@ -41,12 +41,12 @@ void APIKeySettingsDialog::InitUI()
 	m_APIKeyLabel->setText("API Key:");
 	m_APIKeyLabel->setMinimumWidth(80);
 
-	QVector<QString> modelNameList = GetModelNameList();
+	QVector<QString> modelNameList = AIModel::GetModelNameList();
 	for (QString name : modelNameList)
 	{
 		m_ModelComboBox->addItem(name);
 	}
-	m_ModelComboBox->setCurrentText(GetNameByModel(AppSettings::GetModel()));
+	m_ModelComboBox->setCurrentText(AIModel::GetNameByModel(AppSettings::GetModel()));
 	m_APIKeyLineEdit->setText(AppSettings::GetAPIKey());
 
 	m_ModelLayout->addWidget(m_ModelLabel);
@@ -62,7 +62,7 @@ void APIKeySettingsDialog::InitUI()
 
 void APIKeySettingsDialog::accept()
 {
-	AppSettings::SetModel(GetModelByName(m_ModelComboBox->currentText()));
+	AppSettings::SetModel(AIModel::GetModelByName(m_ModelComboBox->currentText()));
 	AppSettings::SetAPIKey(m_APIKeyLineEdit->text());
 
 	QDialog::accept();
