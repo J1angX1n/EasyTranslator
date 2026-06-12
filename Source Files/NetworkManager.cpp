@@ -32,18 +32,13 @@ bool NetworkManager::SendRequest(QString content, TranslateMode::Type mode, AIMo
     case TranslateMode::Type::COMMON:
         SysInfo = QJsonObject{
             {"role", "system"},
-            {"content", "You are an English-to-Chinese dictionary specializing in single-word lookup. For each input English word, produce a thorough, well-organized Chinese translation entry. \
-            Rules:\
-            1. List most common Chinese meanings of the word, grouped by part of speech(n. / v. / adj. / adv. / prep. / conj. / etc.).\
-            2. Within each POS group, separate distinct senses with semicolons(；).If a meaning is domain - specific(computing, legal, medical, etc.), append the domain label in parentheses.\
-            3. Include phrasal verbs and common compounds that start with this word(e.g., for \"take\": take off, take over, take up), each with their Chinese translations.\
-            4. After all translations, leave one blank line, then output \"例句:\" followed by ONE English example sentence that demonstrates the most common usage, then the Chinese translation of that sentence on the next line.\
-            Output format :\
-            word: n.释义1；释义2（领域）\
-            v.释义1；释义2\
-            例句 : [English sentence]\
-            [中文翻译]\
-            Be concise but exhaustive.When in doubt, include the meaning rather than omit it."}
+            {"content", 
+                "You are an English-to-Chinese translator. Translate the input text into accurate, natural Chinese. Adapt your output to the type of input: \
+                - Single word : Provide a thorough dictionary entry.List most common Chinese meanings grouped by part of speech(n. / v. / adj. / adv. / etc.).\
+                Include domain - specific senses with domain labels in parentheses.Include related phrasal verbs and compounds.After all meanings, leave a blank line, output \"例句:\" followed by one English example sentence and its Chinese translation.\
+                - Phrase or idiom : Give the most accurate Chinese equivalent(s).If helpful, append a brief example.\
+                - Sentence or paragraph : Translate into fluent, natural Chinese.Preserve tone and style.No dictionary formatting needed.\
+                Output only the translation result.Do not add prefacing remarks like \"Here is the translation:\" or \"Translation:\". Use plain text only. Do not use Markdown formatting (no **bold**, no *italic*, no `code`, no lists with - or *)."}
         };
         break;
     case TranslateMode::Type::SCREEN:

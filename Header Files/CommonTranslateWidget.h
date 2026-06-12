@@ -27,7 +27,7 @@ private:
 	QVBoxLayout* m_VerticalLayout;
 	
 	QTimer* m_Debounce;
-	float f_DebounceTime = 1.0;
+	float f_DebounceTime = 0.5;
 
 	NetworkManager* m_NetworkManager;
 };

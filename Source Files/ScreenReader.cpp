@@ -12,7 +12,7 @@ ScreenReader::ScreenReader(QObject* parent): QObject(parent)
 	m_Processing = 0;
 
 	QString path = QDir::toNativeSeparators(
-		QCoreApplication::applicationDirPath() + "/../../Resources/tessdata"
+		QCoreApplication::applicationDirPath() + "/Resources/tessdata"
 	);
 
 	if (int ret = m_Tesseract->Init(path.toUtf8().constData(), "eng")) 
