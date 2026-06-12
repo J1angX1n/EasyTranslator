@@ -41,7 +41,12 @@ void CommonTranslateWidget::InitWidget()
 void CommonTranslateWidget::SendTranslateRequest()
 {
 	QString text = m_Input->toPlainText();
-	if (!m_NetworkManager->SendRequest(text))
+	if (text.isEmpty())
+	{
+		return;
+	}
+
+	if (!m_NetworkManager->SendRequest(text, TranslateMode::Type::COMMON))
 	{
 		m_Output->setText("Error, please check settings");
 	}

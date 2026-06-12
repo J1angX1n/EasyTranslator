@@ -2,6 +2,7 @@
 #include <QThread>
 #include <QNetworkReply>
 #include "AIModel.h"
+#include "TranslateMode.h"
 
 class NetworkManager : public QObject
 {
@@ -11,7 +12,7 @@ public:
     NetworkManager(QObject* parent = nullptr);
     ~NetworkManager();
 
-    bool SendRequest(QString content, AIModel::Type model = AIModel::Type::DEEPSEEK_CHAT);
+    bool SendRequest(QString content, TranslateMode::Type mode, AIModel::Type model = AIModel::Type::DEEPSEEK_CHAT);
 
 signals:
     void OnReceivedReply(QNetworkReply* reply);

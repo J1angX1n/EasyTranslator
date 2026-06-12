@@ -24,7 +24,6 @@ Translator::Translator(QWidget *parent)
     InitMenuBar();
     InitScreenModeUI();
     InitCommonModeUI();
-    //SetScreenMode();
 }
 
 Translator::~Translator()
@@ -90,7 +89,6 @@ void Translator::SetTranslateMode(TranslateMode::Type mode)
         break;
     }
 }
-
 
 void Translator::OnAPIKeySettingsClicked()
 {

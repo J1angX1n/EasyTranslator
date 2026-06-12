@@ -5,6 +5,7 @@
 #include <QTextEdit>
 #include <QPushButton>
 #include <QBoxLayout>
+#include "TranslateMode.h"
 
 ScreenTranslateWidget::ScreenTranslateWidget(QWidget* parent): QWidget(parent)
 {
@@ -75,7 +76,7 @@ void ScreenTranslateWidget::SendTranslateRequest(QString text)
     if (m_LastContent != text)
     {
         m_LastContent = text;
-        if (!m_NetworkManager->SendRequest(text))
+        if (!m_NetworkManager->SendRequest(text, TranslateMode::Type::SCREEN))
         {
             m_TextOutput->setText("Error, please check settings");
         }

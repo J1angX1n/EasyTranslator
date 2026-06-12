@@ -112,17 +112,17 @@
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CommonTranslateWidget.cpp" />
-    <ClCompile Include="NetworkManager.cpp" />
-    <ClCompile Include="ScreenTranslateWidget.cpp" />
+    <ClCompile Include="Source Files\CommonTranslateWidget.cpp" />
+    <ClCompile Include="Source Files\NetworkManager.cpp" />
+    <ClCompile Include="Source Files\ScreenTranslateWidget.cpp" />
     <ClCompile Include="Source Files\TranslationDB.cpp" />
     <ClCompile Include="Source Files\TranslateSettingsDialog.cpp" />
-    <QtMoc Include="CommonTranslateWidget.h" />
+    <QtMoc Include="Header Files\CommonTranslateWidget.h" />
     <ClInclude Include="Header Files\TranslateMode.h" />
     <ClInclude Include="Header Files\TranslationDB.h" />
     <ClInclude Include="Header Files\TranslateSettingsDialog.h" />
-    <QtMoc Include="NetworkManager.h" />
-    <QtMoc Include="ScreenTranslateWidget.h" />
+    <QtMoc Include="Header Files\NetworkManager.h" />
+    <QtMoc Include="Header Files\ScreenTranslateWidget.h" />
     <QtRcc Include="Translator.qrc" />
     <QtUic Include="Translator.ui" />
     <QtMoc Include="Header Files\Translator.h" />

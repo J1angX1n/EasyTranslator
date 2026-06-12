@@ -61,13 +61,13 @@
     <ClCompile Include="Source Files\TranslateSettingsDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ScreenTranslateWidget.cpp">
+    <ClCompile Include="Source Files\ScreenTranslateWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NetworkManager.cpp">
+    <ClCompile Include="Source Files\NetworkManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CommonTranslateWidget.cpp">
+    <ClCompile Include="Source Files\CommonTranslateWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -78,13 +78,13 @@
     <QtMoc Include="Header Files\APIKeySettingsDialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="ScreenTranslateWidget.h">
+    <QtMoc Include="Header Files\ScreenTranslateWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="NetworkManager.h">
+    <QtMoc Include="Header Files\NetworkManager.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="CommonTranslateWidget.h">
+    <QtMoc Include="Header Files\CommonTranslateWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
